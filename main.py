@@ -19,6 +19,13 @@ import hashlib
 import base64
 import binascii
 import struct
+import time
+
+from functools import partial
+from kivy.clock import Clock
+
+from faker import Faker
+import faker
 
 kivy.require('1.9.0')
 
@@ -33,6 +40,9 @@ home_path = os.path.expanduser('~')
 
 CONFIG_DIR = home_path + "/.mempass"
 CONFIG_FILE = home_path + "/.mempass/settings.conf"
+
+def reset_clipboard(dt, pw):
+    pass
 
 class GeneratorWidget(BoxLayout):
 
@@ -76,6 +86,19 @@ class GeneratorWidget(BoxLayout):
         self.dropdown_btn.text = self.config['algo']
         self.save_config()
 
+    # copy functions
+
+    def remove_from_clipboard(self, pw, dt):
+        if Clipboard.paste() == pw:
+            Clipboard.copy("")
+            self.msg_label.text = "clipboard emptied %s" % time.asctime()
+        print "blaa", Clipboard.paste(), dt, pw
+
+    def copy_to_clipboard(self, pw):
+        Clipboard.copy(pw)
+        # remove automatically from clipboard 90 seconds later
+        Clock.schedule_once(partial(self.remove_from_clipboard, pw), 90)
+
     # hash generators
 
     def generate_hash(self, extra_data=""):
@@ -101,14 +124,14 @@ class GeneratorWidget(BoxLayout):
     def generate_hex_full(self):
         pw = self.generate_hex()
         self.generated_input.text = pw[:4] + "..."
-        Clipboard.copy(pw)
+        self.copy_to_clipboard(pw)
         self.msg_label.text = "hex (%d) copied to clipboard" % len(pw)
 
     def generate_hex_half(self):
         pw = self.generate_hex()
         pw = pw[:(len(pw)/2)]
         self.generated_input.text = pw[:4] + "..."
-        Clipboard.copy(pw)
+        self.copy_to_clipboard(pw)
         self.msg_label.text = "hex half (%d) copied to clipboard" % len(pw)
 
     def generate_b64(self):
@@ -119,14 +142,14 @@ class GeneratorWidget(BoxLayout):
     def generate_b64_full(self):
         pw = self.generate_b64()
         self.generated_input.text = pw[:4] + "..."
-        Clipboard.copy(pw)
+        self.copy_to_clipboard(pw)
         self.msg_label.text = "b64 (%d) copied to clipboard" % len(pw)
 
     def generate_b64_half(self):
         pw = self.generate_b64()
         pw = pw[:(len(pw)/2)]
         self.generated_input.text = pw[:4] + "..."
-        Clipboard.copy(pw)
+        self.copy_to_clipboard(pw)
         self.msg_label.text = "b64 half (%d) copied to clipboard" % len(pw)
 
     # special generators
@@ -142,6 +165,34 @@ class GeneratorWidget(BoxLayout):
         self.generated_input.text = username
         Clipboard.copy(username)
         self.msg_label.text = "username: %s" % username
+
+    def generate_realname(self):
+        dig = self.generate_hash(extra_data="realname")
+        fake = Faker()
+        seed = int(dig[:8].encode('hex'), 16)
+        fake.random.seed(seed)
+        name = fake.name()
+        self.generated_input.text = name
+        Clipboard.copy(name)
+
+    def generate_address(self):
+        dig = self.generate_hash(extra_data="address")
+        fake = Faker()
+        seed = int(dig[:8].encode('hex'), 16)
+        fake.random.seed(seed)
+        name = fake.address()
+        self.generated_input.text = name
+        Clipboard.copy(name)
+
+    def generate_profile(self):
+        dig = self.generate_hash(extra_data="realname")
+        fake = Faker()
+        seed = int(dig[:8].encode('hex'), 16)
+        fake.random.seed(seed)
+        profile = fake.profile()
+        print profile
+        # self.generated_input.text = profile
+        # Clipboard.copy(profile)
 
 
 class GenerateApp(App):

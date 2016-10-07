@@ -6,11 +6,17 @@ This requires Kivy to run. To run from command line, type:
 
   kivy main.py
 
+Note that you have to install the requirements (only one is Faker) to the kivy virtualenv:
+
+    kivy -m pip install Faker
+
 User-friendly packages might come out later.
 
 ## Usage
 
 Type in a passphrase and a service-related word. Click the buttons to generate different passwords, which are automatically copied to clipboard.
+
+The password is automatically removed from clipboard 90 seconds later, if it is still there.
 
 ## Acknowledgments
 
