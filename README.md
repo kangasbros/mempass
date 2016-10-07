@@ -16,7 +16,7 @@ User-friendly packages might come out later.
 
 Type in a passphrase and a service-related word. Click the buttons to generate different passwords, which are automatically copied to clipboard.
 
-The password is automatically removed from clipboard 90 seconds later, if it is still there.
+The password is automatically removed from clipboard 15 seconds later, if it is still there.
 
 ![screenshot](https://raw.githubusercontent.com/kangasbros/mempass/master/mempass_screenshot.png "Press the various buttons to generate deterministic content.")
 

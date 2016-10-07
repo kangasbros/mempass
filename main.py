@@ -101,7 +101,7 @@ class GeneratorWidget(BoxLayout):
     def copy_to_clipboard(self, pw):
         Clipboard.copy(pw)
         # remove automatically from clipboard 90 seconds later
-        Clock.schedule_once(partial(self.remove_from_clipboard, pw), 90)
+        Clock.schedule_once(partial(self.remove_from_clipboard, pw), 15)
 
     # hash generators
 
