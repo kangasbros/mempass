@@ -1,0 +1,97 @@
+#:kivy 1.0
+#
+<GeneratorWidget>:
+    size: (600, 200)
+    orientation: 'vertical'
+    padding: 10
+    spacing: 10
+
+    generated_input: generated_input
+    passphrase: passphrase
+    word: word
+    msg_label: msg_label
+    dropdown_btn: dropdown_btn
+
+    BoxLayout:
+        TextInput:
+            id: passphrase
+            password: True
+            site_hint: (.7, 1)
+            hint_text: "Passphrase"
+        TextInput:
+            id: word
+            password: True
+            site_hint: (.3, 1)
+            hint_text: "Word"
+    BoxLayout:
+        BoxLayout:
+            Button:
+                id: dropdown_btn
+                text: 'Press'
+                on_release: dropdown.open(self)
+                size_hint_y: None
+                height: '48dp'
+            DropDown:
+                site_hint: (.7, 1)
+
+                id: dropdown
+                on_parent: self.dismiss()
+                on_select: dropdown_btn.text = '{}'.format(args[1])
+
+                Button:
+                    text: 'SHA2-HMAC'
+                    size_hint_y: None
+                    height: 44
+                    on_release: root.select_algo('SHA2-HMAC')
+                Button:
+                    text: 'SHA1-HMAC'
+                    size_hint_y: None
+                    height: 44
+                    on_release: root.select_algo('SHA1-HMAC')
+                Button:
+                    text: 'RIPEMD160-HMAC'
+                    size_hint_y: None
+                    height: 44
+                    on_release: root.select_algo('RIPEMD160-HMAC')
+                Button:
+                    text: 'SHA1'
+                    size_hint_y: None
+                    height: 44
+                    on_release: root.select_algo('SHA1')
+                Button:
+                    text: 'RIPEMD160'
+                    size_hint_y: None
+                    height: 44
+                    on_release: root.select_algo('RIPEMD160')
+        TextInput:
+            id: generated_input
+    BoxLayout:
+        Button:
+            text: 'hex half'
+            on_press: root.generate_hex_half()
+        Button:
+            text: 'hex'
+            on_press: root.generate_hex_full()
+        Button:
+            text: 'b64 half'
+            on_press: root.generate_b64_half()
+        Button:
+            text: 'b64'
+            on_press: root.generate_b64_full()
+    BoxLayout:
+        Button:
+            text: 'username'
+            on_press: root.generate_username()
+        Button:
+            text: 'hex'
+            on_press: root.generate_hex_full()
+        Button:
+            text: 'b64 half'
+            on_press: root.generate_b64_half()
+        Button:
+            text: 'b64'
+            on_press: root.generate_b64_full()
+    Label:
+        id: msg_label
+        text: "..."
+
