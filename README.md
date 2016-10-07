@@ -18,7 +18,7 @@ Type in a passphrase and a service-related word. Click the buttons to generate d
 
 The password is automatically removed from clipboard 90 seconds later, if it is still there.
 
-[screenshot]: https://raw.githubusercontent.com/kangasbros/mempass/master/mempass_screenshot.png "Press the various buttons to generate deterministic content."
+![screenshot](https://raw.githubusercontent.com/kangasbros/mempass/master/mempass_screenshot.png "Press the various buttons to generate deterministic content.")
 
 ## Acknowledgments
 
