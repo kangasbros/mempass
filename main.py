@@ -190,7 +190,7 @@ class GeneratorWidget(BoxLayout):
             username = realname.replace(" ", ".").lower()
         elif username_type == 5:
             randword2 = self.wordlist[(random_looking_number * 2) % len(self.wordlist)]
-            username = randword2[:4] + random_looking_word[:3]
+            username = randword2[:4] + random_looking_word[:7]
         elif username_type == 6:
             randword2 = self.wordlist[(random_looking_number * 2) % len(self.wordlist)]
             username = randword2[:2] + random_looking_word[:3] + str(random_looking_number % 10)
