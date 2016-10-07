@@ -181,9 +181,9 @@ class GeneratorWidget(BoxLayout):
         # generate different usernames
         username = random_looking_word + str(random_looking_number % 100)
         if username_type == 0:
-            username = parts[0].lower() + parts[1][:1].lower()
+            username = parts[0].lower() + parts[1][:1].lower() + str(birthdate.year)[2:]
         elif username_type == 1:
-            username = parts[1][:1].lower() + parts[0].lower()
+            username = parts[1][:1].lower() + parts[0].lower() + str(birthdate.year)[2:]
         elif username_type == 3:
             username = parts[0].lower() + str(birthdate.year)[2:]
         elif username_type == 4:
