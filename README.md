@@ -4,7 +4,7 @@ Simple UI to generate cryptographic hashes (and other things) from phrases + wor
 
 This requires Kivy to run. To run from command line, type:
 
-  kivy main.py
+    kivy main.py
 
 Note that you have to install the requirements (only one is Faker) to the kivy virtualenv:
 
