@@ -33,8 +33,8 @@ kivy.require('1.9.0')
 
 from kivy.config import Config
 Config.set('graphics', 'width', '300')
-Config.set('graphics', 'height', '200')
-Window.size = (300, 200)
+Config.set('graphics', 'height', '170')
+Window.size = (300, 170)
 
 HMAC_MSG = b"mempass"
 
@@ -97,7 +97,6 @@ class GeneratorWidget(BoxLayout):
         if Clipboard.paste() == pw:
             Clipboard.copy("")
             self.msg_label.text = "clipboard emptied %s" % time.asctime()
-        print "blaa", Clipboard.paste(), dt, pw
 
     def copy_to_clipboard(self, pw):
         Clipboard.copy(pw)
