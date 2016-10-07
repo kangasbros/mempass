@@ -24,8 +24,8 @@ kivy.require('1.9.0')
 
 from kivy.config import Config
 Config.set('graphics', 'width', '300')
-Config.set('graphics', 'height', '400')
-Window.size = (300, 400)
+Config.set('graphics', 'height', '200')
+Window.size = (300, 200)
 
 HMAC_MSG = b"mempass"
 
@@ -141,7 +141,7 @@ class GeneratorWidget(BoxLayout):
         username = word1[:6] + word2[:3] + str(third_number % 100)
         self.generated_input.text = username
         Clipboard.copy(username)
-        self.msg_label.text = "username: (%s)" % username
+        self.msg_label.text = "username: %s" % username
 
 
 class GenerateApp(App):
