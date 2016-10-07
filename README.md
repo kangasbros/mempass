@@ -12,10 +12,6 @@ User-friendly packages might come out later.
 
 Type in a passphrase and a service-related word. Click the buttons to generate different passwords, which are automatically copied to clipboard.
 
-### Username
-
-The app can also be used to generate randomish usernames from the phrase.
-
 ## Acknowledgments
 
 This project is inspired by: https://github.com/urbanski/SHA1_Pass
