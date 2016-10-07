@@ -20,6 +20,8 @@ import base64
 import binascii
 import struct
 import time
+import decimal
+import datetime
 
 from functools import partial
 from kivy.clock import Clock
@@ -41,8 +43,11 @@ home_path = os.path.expanduser('~')
 CONFIG_DIR = home_path + "/.mempass"
 CONFIG_FILE = home_path + "/.mempass/settings.conf"
 
-def reset_clipboard(dt, pw):
-    pass
+class DecimalEncoder(json.JSONEncoder):
+    def default(self, o):
+        if isinstance(o, decimal.Decimal):
+            return float(o)
+        return super(DecimalEncoder, self).default(o)
 
 class GeneratorWidget(BoxLayout):
 
@@ -154,45 +159,60 @@ class GeneratorWidget(BoxLayout):
 
     # special generators
 
+    def generate_profile(self):
+        dig = self.generate_hash(extra_data="profile")
+        fake = Faker()
+        seed = int(dig[:8].encode('hex'), 16)
+        fake.random.seed(seed)
+        return fake.profile()
+
     def generate_username(self):
-        dig = self.generate_hash(extra_data="username")
-        first_number = int(dig[:4].encode('hex'), 16)
-        second_number = int(dig[4:8].encode('hex'), 16)
-        third_number = int(dig[8:12].encode('hex'), 16)
-        word1 = self.wordlist[first_number % len(self.wordlist)]
-        word2 = self.wordlist[second_number % len(self.wordlist)]
-        username = word1[:6] + word2[:3] + str(third_number % 100)
-        self.generated_input.text = username
+        profile = self.generate_profile()
+        dig = self.generate_hash(extra_data="profile")
+        random_looking_number = int(dig[:8].encode('hex'), 16)
+
+        # check different data first
+        realname = profile['name']
+        username_type = random_looking_number % 8
+        birthdate = datetime.datetime.strptime(profile['birthdate'], '%Y-%m-%d')
+        parts = realname.split(" ")
+        random_looking_word = self.wordlist[random_looking_number % len(self.wordlist)]
+
+        # generate different usernames
+        username = random_looking_word + str(random_looking_number % 100)
+        if username_type == 0:
+            username = parts[0].lower() + parts[1][:1].lower()
+        elif username_type == 1:
+            username = parts[1][:1].lower() + parts[0].lower()
+        elif username_type == 3:
+            username = parts[0].lower() + str(birthdate.year)[2:]
+        elif username_type == 4:
+            username = realname.replace(" ", ".").lower()
+        elif username_type == 5:
+            randword2 = self.wordlist[(random_looking_number * 2) % len(self.wordlist)]
+            username = randword2[:4] + random_looking_word[:3]
+        elif username_type == 6:
+            randword2 = self.wordlist[(random_looking_number * 2) % len(self.wordlist)]
+            username = randword2[:2] + random_looking_word[:3] + str(random_looking_number % 10)
+
         Clipboard.copy(username)
         self.msg_label.text = "username: %s" % username
 
     def generate_realname(self):
-        dig = self.generate_hash(extra_data="realname")
-        fake = Faker()
-        seed = int(dig[:8].encode('hex'), 16)
-        fake.random.seed(seed)
-        name = fake.name()
-        self.generated_input.text = name
+        name = self.generate_profile()['name']
         Clipboard.copy(name)
+        self.msg_label.text = "realname: %s" % name
 
     def generate_address(self):
-        dig = self.generate_hash(extra_data="address")
-        fake = Faker()
-        seed = int(dig[:8].encode('hex'), 16)
-        fake.random.seed(seed)
-        name = fake.address()
-        self.generated_input.text = name
-        Clipboard.copy(name)
+        address = self.generate_profile()['address']
+        Clipboard.copy(address)
+        self.msg_label.text = "realname: %s" % address
 
-    def generate_profile(self):
-        dig = self.generate_hash(extra_data="realname")
-        fake = Faker()
-        seed = int(dig[:8].encode('hex'), 16)
-        fake.random.seed(seed)
-        profile = fake.profile()
-        print profile
-        # self.generated_input.text = profile
-        # Clipboard.copy(profile)
+    def generate_profile_json(self):
+        profile = self.generate_profile()
+        Clipboard.copy(json.dumps(profile, cls=DecimalEncoder, sort_keys=True,
+                indent=4, separators=(',', ': ')))
+        self.msg_label.text = "profile json copied to clipboard"
 
 
 class GenerateApp(App):
