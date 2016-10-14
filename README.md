@@ -2,7 +2,9 @@
 
 Simple UI to generate cryptographic hashes (and other things) from phrases + words. Can be used as a password manager, if the passphrase is strong enough.
 
-This requires Kivy to run. To run from command line, type:
+This requires Kivy to run. Install Kivy as described in the website (https://kivy.org/#download)
+
+To run from command line, type:
 
     kivy main.py
 
