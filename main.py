@@ -1,4 +1,5 @@
 import os
+import sys
 import json
 import kivy
 from kivy.app import App
@@ -41,7 +42,7 @@ HMAC_MSG = b"mempass"
 home_path = os.path.expanduser('~')
 
 CONFIG_DIR = home_path + "/.mempass"
-CONFIG_FILE = home_path + "/.mempass/settings.conf"
+CONFIG_FILE = CONFIG_DIR + "/settings.conf"
 
 class DecimalEncoder(json.JSONEncoder):
     def default(self, o):
@@ -62,6 +63,16 @@ class GeneratorWidget(BoxLayout):
         super(GeneratorWidget, self).__init__(*args, **kwargs)
         self.dropdown_btn.text = self.config['algo']
 
+    def generate_entropy_phrase(self):
+        if "entropy" in self.config.keys():
+            raise Exception("Can't generate entropy if entropy already exists!")
+        self.config["entropy"] = base64.b64encode(os.urandom(16))
+        entropy_backup_file = CONFIG_DIR + "/entropy_" + datetime.datetime.now().strftime("%Y-%m-%d_%H_%M_%S")
+        f = open(entropy_backup_file, 'w')
+        f.write(json.dumps(self.config))
+        f.close()
+        # self.msg_label.text = "Back up your entropy!"
+
     # configuration functions
 
     def load_config(self):
@@ -71,10 +82,15 @@ class GeneratorWidget(BoxLayout):
             f = open(CONFIG_FILE)
             self.config = json.loads(f.read())
             f.close()
+            # you can define custom HMAC MSG in the config file
+            if "HMAC_MSG" in self.config.keys():
+                HMAC_MSG = self.config["HMAC_MSG"]
         elif not hasattr(self, 'config'):
             self.config = {
                 'algo': 'SHA2-HMAC',
             }
+            self.generate_entropy_phrase()
+            self.save_config()
         # load wordlist
         f = open("bip39_wordlist_en.txt")
         self.wordlist = f.readlines()
@@ -107,7 +123,8 @@ class GeneratorWidget(BoxLayout):
 
     def generate_hash(self, extra_data=""):
         dig = None
-        msg = str(self.passphrase.text) + str(self.word.text) + extra_data
+        entropy = self.config["entropy"]
+        msg = entropy + str(self.passphrase.text) + str(self.word.text) + extra_data
         if self.config['algo'] == 'SHA2-HMAC':
             dig = hmac.new(msg, msg=HMAC_MSG, digestmod=hashlib.sha256).digest()
         elif self.config['algo'] == 'SHA1-HMAC':
@@ -221,4 +238,9 @@ class GenerateApp(App):
         return layout
 
 if __name__ == '__main__':
+    if len(sys.argv) > 1:
+        custom_configuration = sys.argv[1]
+        CONFIG_DIR = home_path + "/.mempass_" + custom_configuration
+        CONFIG_FILE = CONFIG_DIR + "/settings.conf"
+        print "CUSTOM CONFIGURATION:", custom_configuration, CONFIG_FILE
     GenerateApp().run()

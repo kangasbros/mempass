@@ -66,17 +66,17 @@
             id: generated_input
     BoxLayout:
         Button:
-            text: 'hex half'
-            on_press: root.generate_hex_half()
-        Button:
             text: 'hex'
             on_press: root.generate_hex_full()
         Button:
-            text: 'b64 half'
-            on_press: root.generate_b64_half()
+            text: 'hex half'
+            on_press: root.generate_hex_half()
         Button:
             text: 'b64'
             on_press: root.generate_b64_full()
+        Button:
+            text: 'b64 half'
+            on_press: root.generate_b64_half()
     BoxLayout:
         Button:
             text: 'username'
@@ -92,5 +92,5 @@
             on_press: root.generate_profile_json()
     Label:
         id: msg_label
-        text: "..."
+        text: "Back up your config!"
 
