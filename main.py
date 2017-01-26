@@ -123,7 +123,9 @@ class GeneratorWidget(BoxLayout):
 
     def generate_hash(self, extra_data=""):
         dig = None
-        entropy = self.config["entropy"]
+        entropy = ""
+        if "entropy" in self.config.keys():
+            entropy = self.config["entropy"]
         msg = entropy + str(self.passphrase.text) + str(self.word.text) + extra_data
         if self.config['algo'] == 'SHA2-HMAC':
             dig = hmac.new(msg, msg=HMAC_MSG, digestmod=hashlib.sha256).digest()
