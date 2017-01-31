@@ -8,7 +8,7 @@ Note that this app is not a commercial service. If you lose your entropy or forg
 
 Remember to back up your entropy string! Simply copy your ~/.mempass/settings.conf after the first run to usb stick or to cloud. A hacker has to know your passphrase and get the entropy string to get the passwords.
 
-Because passwords are generated deterministically from entropy and passphrase, you don't need to sync passwords or store anything on the cloud. Everything should be instantly synced.
+Because passwords are generated deterministically from entropy and passphrase, you don't need to sync passwords or store anything on the cloud.
 
 ## Installation
 
