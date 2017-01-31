@@ -1,6 +1,8 @@
 # mempass
 
-Simple UI to generate cryptographic hashes (and other things) from phrases + words. Can be used as a password manager, if the passphrase is strong enough.
+Password manager, which tries to be simple to use, simple to backup, and secure. It works with a combination of entropy, passphrase and a service-dependant word. Each password is done by combining these 3 to a hash.
+
+Note that this app is not a commercial service. If you lose your entropy or forget your passphrase, you are screwed. There is no way to recover those.
 
 This requires Kivy to run. Install Kivy as described in the website (https://kivy.org/#download)
 
