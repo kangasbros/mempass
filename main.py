@@ -195,23 +195,10 @@ class GeneratorWidget(BoxLayout):
         birthdate = datetime.datetime.strptime(profile['birthdate'], '%Y-%m-%d')
         parts = realname.split(" ")
         random_looking_word = self.wordlist[random_looking_number % len(self.wordlist)]
+        randword2 = self.wordlist[(random_looking_number * 2) % len(self.wordlist)]
 
         # generate different usernames
-        username = random_looking_word + str(random_looking_number % 100)
-        if username_type == 0:
-            username = parts[0].lower() + parts[1][:1].lower() + str(birthdate.year)[2:]
-        elif username_type == 1:
-            username = parts[1][:1].lower() + parts[0].lower() + str(birthdate.year)[2:]
-        elif username_type == 3:
-            username = parts[0].lower() + str(birthdate.year)[2:]
-        elif username_type == 4:
-            username = realname.replace(" ", ".").lower()
-        elif username_type == 5:
-            randword2 = self.wordlist[(random_looking_number * 2) % len(self.wordlist)]
-            username = randword2[:4] + random_looking_word[:7]
-        elif username_type == 6:
-            randword2 = self.wordlist[(random_looking_number * 2) % len(self.wordlist)]
-            username = randword2[:2] + random_looking_word[:3] + str(random_looking_number % 10)
+        username = randword2[:3] + random_looking_word + str(random_looking_number % 100)
 
         Clipboard.copy(username)
         self.msg_label.text = "username: %s" % username
