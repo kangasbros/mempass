@@ -44,6 +44,6 @@ The default algorithm to use is SHA2-HMAC.
 
 ## Acknowledgments
 
-This project is inspired by: https://github.com/urbanski/SHA1_Pass
+Some ideas: https://news.ycombinator.com/item?id=13674890
 
 Was developed in a hackathon to learn some kivy UI development
