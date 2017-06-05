@@ -219,6 +219,41 @@ class GeneratorWidget(BoxLayout):
                 indent=4, separators=(',', ': ')))
         self.msg_label.text = "profile json copied to clipboard"
 
+    def read_notes(self):
+        if not os.path.exists(CONFIG_DIR):
+            os.makedirs(CONFIG_DIR)
+        dig = self.generate_hash(extra_data="__notes")
+        if os.path.exists(CONFIG_FILE):
+            f = open(CONFIG_FILE)
+            self.config = json.loads(f.read())
+            f.close()
+            # you can define custom HMAC MSG in the config file
+            if "HMAC_MSG" in self.config.keys():
+                HMAC_MSG = self.config["HMAC_MSG"]
+        elif not hasattr(self, 'config'):
+            self.config = {
+                'algo': 'SHA2-HMAC',
+            }
+            self.generate_entropy_phrase()
+            self.save_config()
+        # load wordlist
+        f = open("bip39_wordlist_en.txt")
+        self.wordlist = f.readlines()
+        f.close()
+        self.wordlist = [w.replace("\n", "") for w in self.wordlist]
+
+    def add_note(self):
+        if not os.path.exists(CONFIG_DIR):
+            os.makedirs(CONFIG_DIR)
+        i = 0
+        while True:
+            filepath_digest = self.generate_hash(extra_data="_notes_filename_"+str(i))
+            filepath = binascii.hexlify(filename_digest)
+            # first 2 characters is the directory
+            key_digest = self.generate_hash(extra_data="_notes_content_"+str(i))
+
+
+
 
 class GenerateApp(App):
 
