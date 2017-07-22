@@ -219,38 +219,48 @@ class GeneratorWidget(BoxLayout):
                 indent=4, separators=(',', ': ')))
         self.msg_label.text = "profile json copied to clipboard"
 
+    # additional notes, local only
+
+    def note_directory_name(self):
+        return binascii.hexlify(self.generate_hash(extra_data="_notes_filename_dir"))[:2]
+
+    def note_file_name(self, index):
+        filepath_digest = self.generate_hash(extra_data="_notes_filename_"+str(index))
+        return binascii.hexlify(filepath_digest)[:20]
+
     def read_notes(self):
         if not os.path.exists(CONFIG_DIR):
             os.makedirs(CONFIG_DIR)
-        dig = self.generate_hash(extra_data="__notes")
-        if os.path.exists(CONFIG_FILE):
-            f = open(CONFIG_FILE)
-            self.config = json.loads(f.read())
-            f.close()
-            # you can define custom HMAC MSG in the config file
-            if "HMAC_MSG" in self.config.keys():
-                HMAC_MSG = self.config["HMAC_MSG"]
-        elif not hasattr(self, 'config'):
-            self.config = {
-                'algo': 'SHA2-HMAC',
-            }
-            self.generate_entropy_phrase()
-            self.save_config()
-        # load wordlist
-        f = open("bip39_wordlist_en.txt")
-        self.wordlist = f.readlines()
-        f.close()
-        self.wordlist = [w.replace("\n", "") for w in self.wordlist]
+        notedir = self.note_directory_name()
+        if not os.path.exists(CONFIG_DIR + "/" + notedir):
+            print "no notes"
+            return None
+        i = 0
+        while True:
+            filepath = CONFIG_DIR + "/" + notedir + "/" + self.note_file_name(i)
+            if not os.path.exists(filepath):
+                return
+            else:
+                f = open(filepath, 'r')
+                print f.read()
+            i += 1
 
     def add_note(self):
         if not os.path.exists(CONFIG_DIR):
             os.makedirs(CONFIG_DIR)
+        notedir = self.note_directory_name()
+        if not os.path.exists(CONFIG_DIR + "/" + notedir):
+            os.makedirs(CONFIG_DIR + "/" + notedir)
         i = 0
         while True:
-            filepath_digest = self.generate_hash(extra_data="_notes_filename_"+str(i))
-            filepath = binascii.hexlify(filename_digest)
-            # first 2 characters is the directory
-            key_digest = self.generate_hash(extra_data="_notes_content_"+str(i))
+            filepath = CONFIG_DIR + "/" + notedir + "/" + self.note_file_name(i)
+            if not os.path.exists(filepath):
+                f = open(filepath, 'w')
+                f.write("blaa" + str(i))
+                f.close()
+                return
+            i += 1
+
 
 
 
