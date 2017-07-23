@@ -8,6 +8,8 @@ from kivy.uix.button import Button
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.label import Label
 from kivy.uix.popup import Popup
+from kivy.lang import Builder
+from kivy.uix.textinput import TextInput
 from kivy.uix.settings import (Settings, SettingsWithSidebar,
                                SettingsWithSpinner,
                                SettingsWithTabbedPanel)
@@ -225,8 +227,8 @@ class GeneratorWidget(BoxLayout):
         return binascii.hexlify(self.generate_hash(extra_data="_notes_filename_dir"))[:2]
 
     def note_file_name(self, index):
-        filepath_digest = self.generate_hash(extra_data="_notes_filename_"+str(index))
-        return binascii.hexlify(filepath_digest)[:20]
+        filepath_digest = self.generate_hash(extra_data="_notes_filename")
+        return binascii.hexlify(filepath_digest)[:20] + "_" + str(index)
 
     def read_notes(self):
         if not os.path.exists(CONFIG_DIR):
@@ -261,8 +263,17 @@ class GeneratorWidget(BoxLayout):
                 return
             i += 1
 
-
-
+    def add_note_popup(self):
+        # unload the content of the .kv file
+        # reason: it could have data from previous calls
+        Builder.unload_file('kv/add_note_popup.kv')
+        # load the content of the .kv file
+        content = Builder.load_file('kv/add_note_popup.kv')
+        self.popup = Popup(title='Add note',
+        content=content)
+        self.popup.open()
+        # ,
+        # size_hint=(None, None), size=(400, 400))
 
 
 class GenerateApp(App):
