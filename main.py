@@ -26,6 +26,8 @@ import time
 import decimal
 import datetime
 
+from Crypto.Cipher import AES
+
 from functools import partial
 from kivy.clock import Clock
 
@@ -228,26 +230,50 @@ class GeneratorWidget(BoxLayout):
 
     def note_file_name(self, index):
         filepath_digest = self.generate_hash(extra_data="_notes_filename")
-        return binascii.hexlify(filepath_digest)[:20] + "_" + str(index)
+        return binascii.hexlify(filepath_digest)[:32] + "_" + str(index)
+
+    def note_encryption_key(self, index):
+        encryption_key_data = self.generate_hash(extra_data="_encryption_key_"+str(index))
+        return encryption_key_data[:16]
+
+    def note_IV456(self, index):
+        IV456_data = self.generate_hash(extra_data="_IV456_"+str(index))
+        return IV456_data[:16]
 
     def read_notes(self):
         if not os.path.exists(CONFIG_DIR):
             os.makedirs(CONFIG_DIR)
         notedir = self.note_directory_name()
-        if not os.path.exists(CONFIG_DIR + "/" + notedir):
-            print "no notes"
-            return None
         i = 0
+        final_text = ""
         while True:
             filepath = CONFIG_DIR + "/" + notedir + "/" + self.note_file_name(i)
             if not os.path.exists(filepath):
-                return
+                break
             else:
                 f = open(filepath, 'r')
-                print f.read()
+                cipher = AES.new(self.note_encryption_key(i), AES.MODE_CBC, self.note_IV456(i))
+                decrypted = cipher.decrypt(f.read())
+                final_text += decrypted.rstrip() + "\n"
             i += 1
 
-    def add_note(self):
+        if not final_text:
+            final_text = "no notes"
+
+        # print final_text
+
+        Builder.unload_file('kv/read_notes_popup.kv')
+        # load the content of the .kv file
+        content = Builder.load_file('kv/read_notes_popup.kv')
+        content.note_text.text = final_text
+        self.popup = Popup(title='Notes ' + notedir,
+        content=content)
+        #content.cancel_button.on_release = self.popup.dismiss
+        #content.add_note_button.on_release = self.add_note
+        self.popup.open()
+
+
+    def add_note(self, content):
         if not os.path.exists(CONFIG_DIR):
             os.makedirs(CONFIG_DIR)
         notedir = self.note_directory_name()
@@ -257,9 +283,16 @@ class GeneratorWidget(BoxLayout):
         while True:
             filepath = CONFIG_DIR + "/" + notedir + "/" + self.note_file_name(i)
             if not os.path.exists(filepath):
+                cipher = AES.new(self.note_encryption_key(i), AES.MODE_CBC, self.note_IV456(i))
+
+                plaintext = (unicode(datetime.datetime.utcnow())+"\n"+content).encode('utf-8')
+                l = len(plaintext)
+                ciphertext = cipher.encrypt(plaintext + ((16 - l%16) * ' '))
+
                 f = open(filepath, 'w')
-                f.write("blaa" + str(i))
+                f.write(ciphertext)
                 f.close()
+                self.msg_label.text = "note added: " + filepath[:50] + "..."
                 return
             i += 1
 
@@ -271,16 +304,25 @@ class GeneratorWidget(BoxLayout):
         content = Builder.load_file('kv/add_note_popup.kv')
         self.popup = Popup(title='Add note',
         content=content)
+        #content.cancel_button.on_release = self.popup.dismiss
+        #content.add_note_button.on_release = self.add_note
         self.popup.open()
-        # ,
-        # size_hint=(None, None), size=(400, 400))
 
 
 class GenerateApp(App):
 
     def build(self):
-        layout = GeneratorWidget()
-        return layout
+        self.layout = GeneratorWidget()
+        return self.layout
+
+    def add_note(self, content):
+        # print "blaa222", dir(self.layout.popup)
+        print "blaa", content
+        self.layout.add_note(content)
+        self.layout.popup.dismiss()
+
+    def close_popup(self):
+        self.layout.popup.dismiss()
 
 if __name__ == '__main__':
     if len(sys.argv) > 1:

@@ -18,9 +18,9 @@ To run from command line, type:
 
     kivy main.py
 
-Note that you have to install the requirements (only one is Faker) to the kivy virtualenv:
+Note that you have to install the requirements (Faker and pycrypto) to the kivy virtualenv:
 
-    kivy -m pip install Faker
+    kivy -m pip install Faker pycrypto
 
 User-friendly packages might come out later.
 
