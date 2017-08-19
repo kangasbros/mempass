@@ -88,6 +88,7 @@ class GeneratorWidget(BoxLayout):
             f.close()
             # you can define custom HMAC MSG in the config file
             if "HMAC_MSG" in self.config.keys():
+                global HMAC_MSG
                 HMAC_MSG = self.config["HMAC_MSG"]
         elif not hasattr(self, 'config'):
             self.config = {
